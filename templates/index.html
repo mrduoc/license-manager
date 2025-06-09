@@ -1,56 +1,229 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>License Manager</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+  <style>
+  .color-cycle {
+    animation: colorShift 0.6s infinite linear;
+  }
+
+  @keyframes colorShift {
+    0%   { filter: hue-rotate(0deg); }
+    25%  { filter: hue-rotate(90deg); }
+    50%  { filter: hue-rotate(180deg); }
+    75%  { filter: hue-rotate(270deg); }
+    100% { filter: hue-rotate(360deg); }
+  }
+</style>
+
+  <style>
+  .marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    animation: scroll-left 25s linear infinite;
+  }
+
+  @keyframes scroll-left {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .footer-gradient {
+    background: linear-gradient(to right, #4ade80, #3b82f6, #ec4899, #facc15);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+  }
+</style>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+    }
+    function toggleDarkMode() {
+      const html = document.documentElement;
+      const isDark = html.classList.toggle('dark');
+      localStorage.setItem('darkMode', isDark);
+    }
+    function searchCustomer() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const items = document.querySelectorAll('.license-item');
+      items.forEach(item => {
+        const name = item.getAttribute('data-name').toLowerCase();
+        item.style.display = name.includes(keyword) ? 'block' : 'none';
+      });
+    }
+    function filterByTool() {
+      const selected = document.getElementById("toolFilter").value.toLowerCase();
+      const items = document.querySelectorAll(".license-item");
+      items.forEach(item => {
+        const service = item.getAttribute("data-service") || '';
+        item.style.display = selected === '' || service === selected ? 'block' : 'none';
+      });
+    }
+    function openEditModal(pc_id, name, expires) {
+      document.getElementById('modal-pc-id').value = pc_id;
+      document.getElementById('modal-name').value = name;
+      document.getElementById('modal-expires').value = expires;
+      document.getElementById('editModal').classList.remove('hidden');
+    }
+    function closeModal() {
+      document.getElementById('editModal').classList.add('hidden');
+    }
+    function openAddModal() {
+      document.getElementById("addModal").classList.remove("hidden");
+    }
+    function closeAddModal() {
+      document.getElementById("addModal").classList.add("hidden");
+    }
+  </script>
 </head>
-<body class="bg-light">
-  <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>📋 License Manager</h3>
-      <a href="/logout" class="btn btn-outline-danger btn-sm">Đăng xuất</a>
+<body class="bg-gray-900 text-white min-h-screen font-sans">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold flex items-center gap-3">
+        <i class="fas fa-lock text-yellow-400"></i>
+        QUẢN LÝ CHO THUÊ KEY TOOL
+        <span class="ml-1 flex items-center gap-2">
+          ĐƯỢC HAM HỌC
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg"
+               alt="verified"
+               class="w-9 h-9 color-cycle" />
+        </span>
+      </h1>
+
+      <div class="flex items-center gap-2">
+        <button type="button" onclick="location.reload()" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
+          <i class="fas fa-rotate-right"></i>
+        </button>
+        <button type="button" onclick="toggleDarkMode()" class="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded">
+          <i class="fas fa-adjust"></i>
+        </button>
+        <a href="/logout" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-white font-semibold">
+          Đăng xuất
+        </a>
+      </div>
+    </div>
+    <!-- Bộ lọc -->
+    <div class="flex flex-wrap gap-4 mb-6">
+      <input type="text" id="searchInput" oninput="searchCustomer()" placeholder="Tìm khách hàng..." class="px-4 py-2 w-full md:w-48 rounded bg-gray-800 border border-gray-700 focus:outline-none" />
+      <select id="toolFilter" onchange="filterByTool()" class="px-4 py-2 w-full md:w-60 truncate bg-gray-800 border border-gray-700 focus:outline-none">
+        <option value="">Chọn tool</option>
+        <option value="GOLIKE">TOOL GOLIKE</option>
+        <option value="TRADE">TOOL BOT TRADE FOREX</option>
+        <option value="BACCARAT">TOOL BOT BACCARAT</option>
+      </select>
+      <button onclick="openAddModal()" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">
+        <i class="fas fa-plus"></i> Thêm license
+      </button>
     </div>
 
-    <form action="/add" method="POST" class="row g-3 mb-4">
-      <div class="col-md-5">
-        <input type="text" name="pc_id" class="form-control" placeholder="Nhập PC ID..." required>
+    <!-- Danh sách license -->
+    <div id="license-list">
+      {% for pc_id, lic in licenses.items() %}
+      <div class="license-item bg-gray-800 rounded-lg shadow px-6 py-4 mb-4" data-name="{{ lic.name }}" data-service="{{ lic.service|lower }}">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3 text-xl font-semibold">
+            <i class="fas fa-key text-green-400"></i> {{ lic.service or 'LICENSE' }}
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openEditModal('{{ pc_id }}', '{{ lic.name }}', '{{ lic.expires }}')" class="text-blue-400 hover:text-blue-300">
+              <i class="fas fa-pen"></i>
+            </button>
+            <a href="/toggle/{{ pc_id }}" class="text-yellow-400 hover:text-yellow-300">
+              <i class="fas fa-toggle-{{ 'on' if lic.active else 'off' }}"></i>
+            </a>
+            <a href="/delete/{{ pc_id }}" onclick="return confirm('Bạn chắc xoá?')" class="text-red-500 hover:text-red-400">
+              <i class="fas fa-trash"></i>
+            </a>
+          </div>
+        </div>
+        <div class="grid grid-cols-5 text-sm text-center text-gray-300 gap-2">
+          <div><div class="font-semibold text-white">PC ID</div><div class="break-all text-sm">{{ pc_id }}</div></div>
+          <div><div class="font-semibold text-white">Khách hàng</div><div class="break-words text-sm">{{ lic.name }}</div></div>
+          <div><div class="font-semibold text-white">KEY</div><div>{{ lic.key }}</div></div>
+          <div><div class="font-semibold text-white">Trạng thái</div>
+            <div class="{{ 'text-green-400' if lic.active else 'text-red-500' }}">
+              {{ 'Hoạt động' if lic.active else 'Hết hạn' }}
+            </div>
+          </div>
+          <div><div class="font-semibold text-white">Ngày hết hạn</div><div>{{ lic.expires }}</div></div>
+        </div>
       </div>
-      <div class="col-md-4">
-        <input type="date" name="expires" class="form-control" required>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- MODAL SỬA LICENSE -->
+  <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <form method="POST" class="bg-gray-800 rounded-lg p-6 w-full max-w-md" action="/edit_modal">
+      <h3 class="text-xl font-semibold mb-4">✏️ Cập nhật License</h3>
+      <input type="hidden" name="pc_id" id="modal-pc-id">
+      <div class="mb-4">
+        <label class="block mb-1">Tên khách hàng</label>
+        <input type="text" name="name" id="modal-name" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600">
       </div>
-      <div class="col-md-3">
-        <button type="submit" class="btn btn-success w-100">➕ Thêm License</button>
+      <div class="mb-4">
+        <label class="block mb-1">Hạn sử dụng</label>
+        <input type="date" name="expires" id="modal-expires" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600">
+      </div>
+      <div class="flex justify-between">
+        <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">Lưu</button>
+        <button type="button" onclick="closeModal()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white">Huỷ</button>
       </div>
     </form>
-
-    <table class="table table-bordered table-hover bg-white">
-      <thead class="table-dark">
-        <tr>
-          <th>PC ID</th>
-          <th>KEY</th>
-          <th>Trạng thái</th>
-          <th>Hết hạn</th>
-          <th>Hành động</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for pc_id, info in licenses.items() %}
-        <tr>
-          <td><code>{{ pc_id }}</code></td>
-          <td><code>{{ info.key }}</code></td>
-          <td>{{ '✅ Active' if info.active else '⛔ Revoked' }}</td>
-          <td>{{ info.expires }}</td>
-          <td>
-            <a href="/toggle/{{ pc_id }}" class="btn btn-warning btn-sm">Đổi trạng thái</a>
-            <a href="/delete/{{ pc_id }}" class="btn btn-danger btn-sm">Xoá</a>
-          </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="5" class="text-center">Không có dữ liệu.</td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
   </div>
+
+   <!-- MODAL THÊM LICENSE -->
+  <div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <form method="POST" action="/add" class="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+      <h3 class="text-xl font-semibold mb-4">🟢 Thêm License Mới</h3>
+      <div class="mb-4">
+        <label class="block mb-1">PC ID</label>
+        <input type="text" name="pc_id" required class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600">
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1">Tên khách hàng</label>
+        <input type="text" name="name" class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600">
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1">Hạn sử dụng</label>
+        <input type="date" name="expires" required class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600">
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1">Loại tool</label>
+        <select name="service" required class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600">
+          <option value="GOLIKE">TOOL GOLIKE</option>
+          <option value="TRADE">TOOL BOT TRADE FOREX</option>
+          <option value="BACCARAT">TOOL BOT BACCARAT</option>
+        </select>
+      </div>
+      <div class="flex justify-between">
+        <button type="submit" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded text-white">Thêm</button>
+        <button type="button" onclick="closeAddModal()" class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded text-white">Huỷ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="w-full py-2">
+  <div class="marquee text-sm text-center font-medium">
+    <span class="footer-gradient">
+      Trang Web Quản Lý Cho Thuê Tool Key Được Thiết Kế Bởi <strong>Nguyễn Thành Được</strong> / Hotline : <strong>0867692476</strong>
+    </span>
+  </div>
+</footer>
+
 </body>
 </html>

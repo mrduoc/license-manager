@@ -1,3 +1,23 @@
 {
-  "licenses": {}
+  "22c192840ee840356928e9da1bfca8ad1abd23c164e86ed9893715c02a8d92f7": {
+    "name": "Nguyễn Thành Được",
+    "key": "ab93b4270f8145bd",
+    "active": true,
+    "expires": "2025-06-13",
+    "service": "TRADE"
+  },
+  "a": {
+    "name": "Hoài Thi",
+    "key": "d0896a21c35d4a07",
+    "active": true,
+    "expires": "2025-06-12",
+    "service": "GOLIKE"
+  },
+  "sdhdddddd": {
+    "name": "Mỹ Trinh",
+    "key": "2fcb05ffdeb947cb",
+    "active": true,
+    "expires": "2025-06-22",
+    "service": "BACCARAT"
+  }
 }

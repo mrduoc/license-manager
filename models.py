@@ -1,9 +1,10 @@
-from datetime import datetime
+from dataclasses import dataclass
 
-class License:
-    def __init__(self, pc_id, key, active=True, expires=None):
-        self.pc_id = pc_id
-        self.key = key
-        self.active = active
-        self.expires = expires
-        self.created_at = datetime.now()
+@dataclass
+class LicenseKey:
+    pc_id: str
+    key: str
+    name: str
+    expires: str
+    active: bool = True
+    service: str = ""

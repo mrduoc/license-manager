@@ -1,40 +1,63 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Đăng nhập Admin</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background: #f4f6f9; }
-    .login-box {
-      max-width: 400px;
-      margin: 100px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="login-box">
-    <h3 class="text-center mb-4">🔐 Admin Login</h3>
-    {% if error %}
-      <div class="alert alert-danger">{{ error }}</div>
-    {% endif %}
-    <form method="POST">
-      <div class="mb-3">
-        <label class="form-label">Tài khoản</label>
-        <input type="text" class="form-control" name="username" required>
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Mật khẩu</label>
-        <input type="password" class="form-control" name="password" required>
-      </div>
-      <div class="d-grid">
-        <button class="btn btn-primary">Đăng nhập</button>
-      </div>
-    </form>
+<style>
+  .color-cycle {
+    animation: colorShift 0.6s infinite linear;
+  }
+
+  @keyframes colorShift {
+    0%   { filter: hue-rotate(0deg); }
+    25%  { filter: hue-rotate(90deg); }
+    50%  { filter: hue-rotate(180deg); }
+    75%  { filter: hue-rotate(270deg); }
+    100% { filter: hue-rotate(360deg); }
+  }
+</style>
+
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center px-4">
+
+  <!-- Viền đen bao quanh - chỉ border -->
+  <div class="border-4 border-black rounded-2xl p-1">
+
+    <!-- Nội dung đăng nhập vẫn giữ nền như cũ -->
+    <div class="bg-gray-800 rounded-xl px-8 py-10 w-full max-w-md text-center">
+
+      <!-- Avatar -->
+<img src="/static/avatar.png" class="w-24 h-24 rounded-full mx-auto mb-5" />
+
+<!-- Tên + tích xanh -->
+<h2 class="text-xl font-semibold flex items-center justify-center gap-2">
+  Được Ham Học
+  <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg"
+       class="w-5 h-5 animate-pulse" />
+</h2>
+
+<!-- Website mô tả (in đậm, dời xuống dưới) -->
+<p class="text-sm font-semibold text-gray-100 tracking-widest uppercase mt-2 mb-7">
+  WEBSITE QUẢN LÝ CHO THUÊ KEY TOOL
+</p>
+
+<!-- Form đăng nhập -->
+<form method="POST" class="space-y-4">
+  <input type="text" name="username" placeholder="Tên đăng nhập"
+         class="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none" />
+  <input type="password" name="password" placeholder="Mật khẩu"
+         class="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none" />
+  <button type="submit"
+          class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded">
+    Đăng nhập
+  </button>
+</form>
+    </div>
   </div>
+
+</body>
+
 </body>
 </html>
