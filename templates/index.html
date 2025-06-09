@@ -1,49 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>License Manager</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="p-4">
-  <h2 class="mb-4">🔐 License Manager</h2>
+<body class="bg-light">
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3>📋 License Manager</h3>
+      <a href="/logout" class="btn btn-outline-danger btn-sm">Đăng xuất</a>
+    </div>
 
-  <form action="/add" method="POST" class="row g-3 mb-4">
-    <div class="col-md-5">
-      <input type="text" name="pc_id" class="form-control" placeholder="Nhập PC ID..." required>
-    </div>
-    <div class="col-md-4">
-      <input type="date" name="expires" class="form-control" required>
-    </div>
-    <div class="col-md-3">
-      <button type="submit" class="btn btn-success w-100">➕ Thêm License</button>
-    </div>
-  </form>
+    <form action="/add" method="POST" class="row g-3 mb-4">
+      <div class="col-md-5">
+        <input type="text" name="pc_id" class="form-control" placeholder="Nhập PC ID..." required>
+      </div>
+      <div class="col-md-4">
+        <input type="date" name="expires" class="form-control" required>
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-success w-100">➕ Thêm License</button>
+      </div>
+    </form>
 
-  <table class="table table-bordered table-hover">
-    <thead class="table-dark">
-      <tr>
-        <th>PC ID</th>
-        <th>KEY</th>
-        <th>Trạng thái</th>
-        <th>Hết hạn</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for pc_id, info in licenses.items() %}
-      <tr>
-        <td><code>{{ pc_id }}</code></td>
-        <td><code>{{ info.key }}</code></td>
-        <td>{{ '✅ Active' if info.active else '⛔ Revoked' }}</td>
-        <td>{{ info.expires }}</td>
-        <td>
-          <a href="/toggle/{{ pc_id }}" class="btn btn-sm btn-warning">🔁 Đổi trạng thái</a>
-          <a href="/delete/{{ pc_id }}" class="btn btn-sm btn-danger">🗑️ Xóa</a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <table class="table table-bordered table-hover bg-white">
+      <thead class="table-dark">
+        <tr>
+          <th>PC ID</th>
+          <th>KEY</th>
+          <th>Trạng thái</th>
+          <th>Hết hạn</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pc_id, info in licenses.items() %}
+        <tr>
+          <td><code>{{ pc_id }}</code></td>
+          <td><code>{{ info.key }}</code></td>
+          <td>{{ '✅ Active' if info.active else '⛔ Revoked' }}</td>
+          <td>{{ info.expires }}</td>
+          <td>
+            <a href="/toggle/{{ pc_id }}" class="btn btn-warning btn-sm">Đổi trạng thái</a>
+            <a href="/delete/{{ pc_id }}" class="btn btn-danger btn-sm">Xoá</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center">Không có dữ liệu.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </body>
 </html>
